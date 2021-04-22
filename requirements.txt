@@ -1,0 +1,7 @@
+dash
+gunicorn
+pandas
+statsmodels
+nbformat # for plotly pie chart necessary
+python-dotenv
+mysql-connector-python
