@@ -1,6 +1,12 @@
+
+# own files
+
 privateNotes.md
 .vscode
 Notes.md
+data.py
+
+
 # __pycache__
 
 data_wrangling.ipynb
