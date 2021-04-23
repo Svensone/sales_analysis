@@ -1,9 +1,4 @@
-/* color_extralight = 'rgb(247,251,255)'
-color_bg = 'rgb(222,235,247)'
-color_main = 'rgb(33,113,181)'
-color_dark = 'rgb(8,48,107)' */
-/* Viridis color Scheme:
-['#440154', '#482878', '#3e4989', '#31688e', '#26828e', '#1f9e89', '#35b779', '#6ece58', '#b5de2b', '#fde725'] */
+
 @font-face {
   font-family: "FontAwesome";
   src: url("../fonts/fontawesome-webfont.eot?v=4.7.0");
@@ -17,7 +12,6 @@ color_dark = 'rgb(8,48,107)' */
   font-weight: normal;
   font-style: normal;
 }
-/* font-face */
 
 body {
   width: 100%;
@@ -134,15 +128,20 @@ table {
   font-size: 1rem;
   border-spacing: 0;
   border-collapse: collapse;
+  padding-right : 20px;
 }
 td,
 th {
   border: 0px solid #ddd;
   padding: 8px;
+  font-size: 1.2rem;
+  font-weight: 200;
+  align-items: center;
 }
 
+
 table.tiny-header tr:first-child {
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .columns {
@@ -351,15 +350,6 @@ a:active {
     font-size: 1.5rem;
   }
 
-  /* plotly color schemes "BLUES"
-['rgb(247,251,255)', 'rgb(222,235,247)', 
-'rgb(198,219,239)', 'rgb(158,202,225)', 
-'rgb(107,174,214)', 
-color_bright = rgb(198,219,239)
-color_main = 'rgb(66,146,198)',
-
-Color_extra_dark = 'rgb(8,48,107)
- 'rgb(33,113,181)', 'rgb(8,81,156)', 'rgb(8,48,107)'] */
   .main-title {
     width: 55%;
     padding-left: 15px;

@@ -25,15 +25,14 @@ def create_layout(app, df):
         row = [type, Series.max(), Series.min(), Series.mean().round(2), Series.std().round(2)]
         rows.append(row)
     df_table1 = pd.DataFrame(rows, columns=['Name','Max', 'Min', 'Mean', 'Std. Deviation'])
+    df_table1 = df_table1.round(1)
 
     # Bar Graph Yearly Sales/Customer Overview
     ######################
     year_sales = df.groupby(['Year'])['Sales'].sum().to_frame()
-    year_sales['Sales'] = (year_sales.Sales / 10000000).astype(int)
     year_customers = df.groupby(['Year'])['Customers'].sum().to_frame()
-    year_customers['Customers'] = (year_customers.Customers / 1000000).astype(int)
     df_barGraph = pd.merge(year_sales, year_customers, how='left', on='Year')
-
+    
     return html.Div(
         [
             html.Div([Header(app)]),
@@ -89,7 +88,7 @@ def create_layout(app, df):
                         [
                             html.Div(
                                 [
-                                    html.H6("Rossmann Overview", className="subtitle padded"),
+                                    html.H6("Rossmann Monthly KPIs", className="subtitle padded"),
                                     html.Div([
                                         dcc.Dropdown(
                                             id='overview_selectors',
@@ -120,8 +119,9 @@ def create_layout(app, df):
                         [
                             html.Div(
                                 [
-                                    html.H6(["Overview"], className="subtitle padded"),
-                                    html.Table(make_dash_table_w_header(df_table1), className='table'),
+                                    html.H6(["Daily Metrics per Store"], className="subtitle padded"),
+                                    html.Table(make_dash_table_w_header(df_table1), 
+                                    className='table'),
                                 ],
                                 className="six columns",
                             ),
@@ -160,7 +160,7 @@ def create_layout(app, df):
                                                 ),
                                             ],
                                             "layout": go.Layout(
-                                                autosize=False,
+                                                autosize=True,
                                                 bargap=0.35,
                                                 height=200,
                                                 hovermode="closest",
@@ -198,7 +198,7 @@ def create_layout(app, df):
                                         config={"displayModeBar": False},
                                     ),
                                 ],
-                                className="five columns",
+                                className="six columns",
                             ),
                         ],
                         className="row",

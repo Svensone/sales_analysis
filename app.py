@@ -30,11 +30,17 @@ df = pd.read_csv(DATA_PATH.joinpath('clean.csv'), low_memory=False, parse_dates=
 # From GoogleCloud SQL (not using since expensive, test successful)
 # df_sales = connect_gCloud_sql()
 
-# COLOR_VAR
+# COLOR_VAR from 'Blues
 color_extralight = 'rgb(247,251,255)'
 color_bg = 'rgb(222,235,247)'
 color_main = 'rgb(33,113,181)'
 color_dark = 'rgb(8,48,107)'
+# Viridis 
+#['#440154', '#482878', '#3e4989', '#31688e', '#26828e', 
+# '#1f9e89', '#35b779', '#6ece58', '#b5de2b', '#fde725']
+color_contr = '#fde725'
+color_contr2 = '#b5de2b'
+
 
 # SETUP APP & SERVER
 #######################
@@ -59,22 +65,22 @@ app.layout = html.Div(
     [Input("url", "pathname")])
 def display_page(pathname):
     if pathname == "/dash-financial-report/explAnalysis":
-        return explAnalysis.create_layout(app)
+        return explAnalysis.create_layout(app, df)
     # elif pathname == "/dash-financial-report/time_series":    # add later when Design clean
     #     return time_series.create_layout(app)
     elif pathname == "/dash-financial-report/correlations":
-        return correlations.create_layout(app)
+        return correlations.create_layout(app, df)
     elif pathname == "/dash-financial-report/predictions":
-        return predictions.create_layout(app)
+        return predictions.create_layout(app, df)
     # elif pathname == "/dash-financial-report/review":         # add later when Design clean
     #     return review.create_layout(app)
     elif pathname == "/dash-financial-report/full-view":
         return (
             overview.create_layout(app, df),
-            explAnalysis.create_layout(app),
+            explAnalysis.create_layout(app, df),
             # time_series.create_layout(app),
-            correlations.create_layout(app,),
-            predictions.create_layout(app),
+            correlations.create_layout(app, df),
+            predictions.create_layout(app, df),
             # review.create_layout(app),
         )
     else:
@@ -96,7 +102,7 @@ def overview_graph_1(select):
         'Customers': np.sum,
         'SalesPerCustomer': np.mean
     })
-    data_overview['Sales'] = data_overview['Sales'] / 10
+    data_overview['Sales'] = data_overview['Sales']
     # add percentage change
     bar_list = ['Customers', 'Sales']
     for col in bar_list:
@@ -105,7 +111,7 @@ def overview_graph_1(select):
     
     fig1 = make_subplots(specs=[[{"secondary_y": True}]])
     # Customers
-    color_list = [color_dark, color_bg]
+    color_list = [color_dark, color_main]
     count = 0
     for value in bar_list:
         fig1.add_trace(
@@ -117,19 +123,22 @@ def overview_graph_1(select):
             ),
             secondary_y=False)
         count =+ 1
-
+    color2 = [ color_contr, color_contr2]
     count = 0
     for value_pct in bar_list:
         fig1.add_trace(
             go.Scatter(
-                name= value_pct + " per month",
+                name= value_pct + " % Change",
                 mode="lines", 
                 x=data_overview.index, 
                 y=data_overview[value_pct + '_pct_change'],
-                # fill='tonexty',
-                # fillcolor= color_bg,
-                marker = dict(
-                    color = color_list[count])
+                # marker = dict(
+                #     color = color2[count])
+                line=dict(
+                    color=color2[count], 
+                    width=3,
+                    # dash='dash'
+                    )
             ),
             secondary_y=True,
             )
@@ -170,74 +179,6 @@ def overview_graph_1(select):
         showlegend=True,
     )
     return fig1
-    # Working with 2 Scatter Plot line mode
-    ##########################
-    # fig1.add_trace(
-    #     go.Scatter(
-    #     name= "Customers per month",
-    #     mode="markers+lines", 
-    #     x=data_overview.index, 
-    #     y=data_overview["Customers"],
-    #     # fill='tonexty',
-    #     # fillcolor= color_bg,
-    #     marker = dict(
-    #     color = color_bg)
-    # ),
-    # secondary_y=True,
-    # )
-    # fig1.add_trace(
-    #     go.Scatter(
-    #     name= "Sales per month",
-    #     mode="markers+lines", 
-    #     x=data_overview.index, 
-    #     y=data_overview["Sales"],
-    #     # fill='tonexty',
-    #     # fillcolor= color_dark,
-    #     marker = dict(
-    #     color = color_dark)
-    # ),
-    # secondary_y=False,
-    # )   
-    # fig1.add_hline(
-    #     y= 1950000000,
-    #     line_width=3,
-    #     line_dash="dash",
-    #     line_color='green',
-    #     annotation_text="Average Sales",
-    #     annotation_position="bottom right",
-    # )
-    # fig1.update_layout(
-    #     font=dict(
-    #         family='Helvetica',
-    #     ),
-    #     autosize=True,
-    #     paper_bgcolor='rgba(0,0,0,0)',
-    #     plot_bgcolor='rgba(0,0,0,0)',
-    #     height=300,
-    #     hovermode="closest",
-    #     legend={
-    #         # "x": -0.0228945952895,
-    #         # "y": -0.189563896463,
-    #         "orientation": "h",
-    #         "yanchor": "top",
-    #     },
-    #     xaxis = dict(
-    #         range = ['2013-01-01','2015-07-31'],
-    #         rangeslider = dict(
-    #             visible = True
-    #         ),
-    #         dtick="M1", 
-    #         tickformat="%b\n%Y",
-    #         ticklabelmode="period",
-    #     ),
-    #     margin={
-    #         "r": 10,
-    #         "t": 30,
-    #         "b": 30,
-    #         "l": 30,
-    #     },
-    #     showlegend=True,
-    # )
 
 # page 2: explanatory / statistical Data Analysis
 ##################

@@ -110,7 +110,7 @@ def make_dash_table_w_header(df):
     column_names = df.columns
     html_header = []
     for column in column_names:
-        html_header.append(html.Td(column))
+        html_header.append(html.Th(column))
     table.append(html.Tr(html_header))
     for index, row in df.iterrows():
         html_row = []

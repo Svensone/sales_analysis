@@ -10,7 +10,7 @@ from utils import Header, make_dash_table
 
 import pandas as pd
 
-def create_layout(app):
+def create_layout(app, df):
     return html.Div(
         [
             Header(app),

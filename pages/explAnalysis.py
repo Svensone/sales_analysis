@@ -2,6 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 # helper function from utils.py file
 from utils import Header, make_dash_table, make_dash_table_list
@@ -26,45 +27,56 @@ color_dark = 'rgb(8,48,107)'
 # Mixed Subplot : https://plotly.com/python/mixed-subplots/
 #######################################################
 
-def create_layout(app):
+
+def create_layout(app, df):
     PATH = pathlib.Path(__file__).parent.parent
     DATA_PATH = PATH.joinpath("data")  # .resolve()
     # 1. Full set
-    df_total = pd.read_csv(DATA_PATH.joinpath('clean.csv'), low_memory=False, parse_dates=True)
-    # 
-    df_sales_raw = pd.read_csv(DATA_PATH.joinpath('train.csv'), low_memory=False, parse_dates=True, index_col="Date")
-    df_stores_raw = pd.read_csv(DATA_PATH.joinpath('store.csv'), low_memory=False, parse_dates=True)
+    # df = pd.read_csv(DATA_PATH.joinpath('clean.csv'),
+    #                  low_memory=False, parse_dates=True)
+    # #
+    df_sales_raw = pd.read_csv(DATA_PATH.joinpath(
+        'train.csv'), low_memory=False, parse_dates=True, index_col="Date")
+    df_stores_raw = pd.read_csv(DATA_PATH.joinpath(
+        'store.csv'), low_memory=False, parse_dates=True)
 
     # Table 1
-    sales_data_overview =[
+    sales_data_overview = [
         ['Total Number of Sales entries', df_sales_raw.shape[0]],
-        ['Days with no Sales-value', df_sales_raw[(df_sales_raw.Sales == 0)].shape[0]],
+        ['Days with no Sales-value',
+            df_sales_raw[(df_sales_raw.Sales == 0)].shape[0]],
     ]
     store_data_overview = [
-        ['Nr of Storetypes', df_total.StoreType.unique().shape[0]],
-        ['Nr. of different Assortment levels', df_total.Assortment.unique().shape[0]],
-        ['Average Monthly Sales per Storetype', " "],
+        ['Nr of Storetypes', df.StoreType.unique().shape[0]],
+        ['Nr. of different Assortment levels', df.Assortment.unique().shape[0]],
     ]
 
     # ECDF graph
     ################################
     data_ecdf = df_sales_raw["Sales"]
+
     ecdf_sales = ECDF(data_ecdf)
-    fig_ecdf = go.Figure()
-    fig_ecdf.add_scatter(
-        x=np.unique(data_ecdf), 
-        y=( ecdf_sales)(np.unique(data_ecdf))
-        )
+    fig_ecdf = make_subplots(rows=2, cols=1)
+    
+    fig_ecdf.append_trace(go.Scatter(
+        x = np.unique(df_sales_raw['Sales']),
+        y = ((ECDF(df_sales_raw['Sales']))(np.unique(df_sales_raw['Sales'])))
+    ), row=1, col=1)
+    fig_ecdf.append_trace(go.Scatter(
+        x = np.unique(df_sales_raw['Customers']),
+        y = ((ECDF(df_sales_raw['Customers']))(np.unique(df_sales_raw['Customers'])))
+    ), row=2, col=1)
 
-    # PIE GRAPH Sales
+    # PIE Missing Values - Sales
     #################
-    sunday = df_sales_raw[(df_sales_raw.DayOfWeek == 7) & (df_sales_raw.Sales == 0)].shape[0]
-    holiday = df_sales_raw[(df_sales_raw.StateHoliday == 0) & (df_sales_raw.Sales == 0)].shape[0]
-    total = sales_missing_values = df_sales_raw[(df_sales_raw.Open == 0) & (df_sales_raw.Sales == 0)].shape[0]
-    others = total - sunday - holiday
+    # sunday = df_sales_raw[(df_sales_raw.DayOfWeek == 7) & (df_sales_raw.Sales == 0)].shape[0]
+    # holiday = df_sales_raw[(df_sales_raw.StateHoliday == 0) & (
+    #     df_sales_raw.Sales == 0)].shape[0]
+    # total = df_sales_raw[(
+    #     df_sales_raw.Open == 0) & (df_sales_raw.Sales == 0)].shape[0]
+    # others = total - sunday - holiday
     labels_pie = ['Sunday', 'Holiday', 'Others']
-    values_pie = [sunday, holiday, others]
-
+    values_pie = [[141137, 0, 31680]]
     data_pie = [
         dict(
             type='pie',
@@ -79,21 +91,21 @@ def create_layout(app):
     ]
     pie_fig = go.Figure(data=data_pie)
 
-
     # Pie Graph: Missing Values Stores-Dataset
+    #################
     data_1 = df_stores_raw.isnull().sum().to_frame()
-    labels_1 = data_1.index
-    values_1 = data_1[0]
+    data_1 = data_1[(data_1[0] != 0)]
+    data_1.columns = ['missing_values']
 
     data_pie_stores = [
         dict(
             type='pie',
-            labels=labels_1,
-            values= values_1,
+            labels= data_1.index,
+            values= data_1['missing_values'],
             title='Store Dataset: Values Missing',
             name='Missing Values',
             marker=dict(
-                colors= px.colors.sequential.Viridis,
+                colors=px.colors.sequential.Viridis,
             ),
         )
     ]
@@ -101,19 +113,18 @@ def create_layout(app):
 
     # Pie Graph 2 - Sales-Storetype Percentage
     ###########################
-    nr_storetypes = df_total.groupby(['StoreType'])['Sales'].sum()
-    labels_storetype = list(nr_storetypes.index)
-    sales_storetype = list(nr_storetypes)
+    nr_storetypes = df.groupby(['StoreType'])['Sales'].sum()
+    
     data_pie_stores = [
         dict(
             type='pie',
-            labels=labels_storetype,
-            values=sales_storetype,
+            labels=list(nr_storetypes.index),
+            values=list(nr_storetypes),
             name='Storetype',
             title="Storetypes: Pct. of Sales",
             insidetextorientation='radial',
             marker=dict(
-                colors=px.colors.sequential.Blues,
+                colors=px.colors.sequential.Viridis,
             ),
         ),
     ]
@@ -163,6 +174,35 @@ def create_layout(app):
                     ##################
                     html.Div(
                         [
+                            html.Div(
+                                [
+                                    html.H6("Test",
+                                            className="subtitle padded"),
+                                    dcc.Graph(
+                                        id="graph_histo",
+                                        figure=px.histogram(
+                                            df['Sales'], x="Sales", marginal="rug")
+                                    )
+                                ],
+                                className="eight columns",
+                            ),
+                        ],
+                        className="row ",
+                    ),
+                    # Row Distribution
+                    ##################
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6("Test2",
+                                            className="subtitle padded"),
+                                    dcc.Graph(
+                                        id="graph_histo_kde_rug",
+                                    ),
+                                ],
+                                className="eight columns",
+                            ),
                         ],
                         className="row ",
                     ),
@@ -201,7 +241,8 @@ def create_layout(app):
                         ],
                         className="row ",
                     ),
-                    # Row 
+                    ###########################
+                    # Row Sales of Storetypes
                     ##################
                     html.Div(
                         [
@@ -226,10 +267,7 @@ def create_layout(app):
                         className="row ",
                     ),
                     ##################
-                    # Row
-                    ##################
-                    # Row
-                    # Outlier test with plotly
+                    # Row Outlier test with plotly
                     # https://plotly.com/python/v3/outlier-test/
                     ##################
                     html.Div(
