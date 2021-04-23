@@ -8,8 +8,6 @@ import pathlib
 from html_blocks import get_disclaimer_block, get_image_block
 from utils import Header, make_dash_table
 
-from app import app
-
 import pandas as pd
 
 def create_layout(app):

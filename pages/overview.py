@@ -6,7 +6,7 @@ from utils import Header, make_dash_table, make_dash_table_w_header
 
 import pandas as pd
 pd.options.mode.chained_assignment = None
-import pathlib
+
 
 # COLOR_VAR
 color_extralight = 'rgb(247,251,255)'
