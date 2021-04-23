@@ -11,8 +11,8 @@ from plotly.subplots import make_subplots
 import pathlib
 import pandas as pd
 import numpy as np
-
-from data import get_data, get_corr  # connect_gCloud_sql
+# INFO: data.py not pushed to github / heroku!!
+# from data import get_data, get_corr  # connect_gCloud_sql
 from pages import (
     overview,
     explAnalysis,
