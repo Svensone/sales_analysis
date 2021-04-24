@@ -67,22 +67,13 @@ def create_layout(app, df):
                             html.Div(
                                 [
                                     html.H6(['.html file in html.Img() not working']),
-                                    html.Iframe(src=html_test,
-                                        style={
-                                            'display': 'block',
-                                            'width': '100%',
-                                            "height": "100%",
-                    						'border': 'none',
-                    						'position': 'absolute',
-                    						'top': 0,
-                    						'left': 0,
-                                        }
-                    				),
-                                ], style={
-                                    'position': 'relative',
-                    				'padding': '90%',
-                                    "width": '100%',
-                                    }
+                                    html.Iframe(
+                                        src=html_test, 
+                                        height= 650, 
+                                        width= 900,
+                                        style={'border': 'none'}
+                                        )
+                                ]
                             )
                         ],
                         className="row ",
