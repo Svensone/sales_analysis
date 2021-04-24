@@ -5,3 +5,5 @@ statsmodels
 nbformat # for plotly pie chart necessary
 # python-dotenv
 # mysql-connector-python
+
+dash-dangerously-set-inner-html

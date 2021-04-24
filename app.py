@@ -3,11 +3,9 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-
 import pathlib
 import pandas as pd
 import numpy as np
@@ -21,6 +19,23 @@ from pages import (
     predictions,
     review,
 )
+##############################################################
+#  to-dos:
+
+# in App
+###############
+# https://plotly.com/python/heatmaps/# 
+
+# in Colab import as Html:
+###############
+# heatmapz - create in Colab and import as html
+# Outlier Test :  https://plotly.com/python/v3/outlier-test/
+# 
+# Implement : js.animation (from Bali homepage) with
+# https://community.plotly.com/t/how-can-i-use-my-html-file-in-dash/7740
+
+##############################################################
+
 # Data
 ########################
 PATH = pathlib.Path(__file__).parent
@@ -54,7 +69,7 @@ server = app.server
 # LAYOUT
 #######################
 app.layout = html.Div(
-    [dcc.Location(id="url", refresh=True),
+    [dcc.Location(id="url", refresh=False),
     html.Div(id="page-content")]
 )
 
@@ -201,36 +216,19 @@ def overview_graph_1(select):
     #                     hovermode="closest", plot_bgcolor='rgb(0,0,0,0)')
     # return fig_1
 
+#################
+# page Preditions
 ##################
-# page 4: Correlations 
-##################
-# Correlation Matrix with plotly:
-@app.callback(
-    Output('corr_matrix', 'figure'),
-    [Input('corr_selector', 'value')]
-)
-def corr_graph(corr_selector):
-    # limit columns since RAM Heroku limited
-    df_corr = df[['Store','DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo',    'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance','PromoInterval']]
-    value_x = ['Store','DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo',    'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance','PromoInterval']
-    data = [
-        go.Heatmap(
-            z=df_corr.corr(),
-            # x=['Store', 'DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo', 'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance', 'PromoInterval'],
-            # y=['Store', 'DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo', 'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance', 'PromoInterval'],
-            ids= value_x,
-            colorscale='Viridis',
-            reversescale=False,
-            # type= 'heatmap',
-            opacity=0.8,
-        )
-    ]
-    layout = go.Layout(
-        xaxis=dict(ticks='', nticks=36),
-        yaxis=dict(ticks=''),
-        width=600, height=600)
-    fig2 = go.Figure(data=data, layout=layout)
-    return fig2
+# Facebook Prophet
+
+# @app.callback(
+#     Output('html_figure', 'figure'), 
+#     [Input('html_figure_input', 'values')]
+#     )
+# def prophet_html(input):
+#     html_file = app.get_asset_url('plotly_fb_test.html')
+#     fig = html_file
+
 
 #################
 # page 5 Review (in the making)

@@ -7,6 +7,13 @@ from utils import Header, make_dash_table, make_dash_table_w_header
 import pandas as pd
 pd.options.mode.chained_assignment = None
 
+##############################################################
+#  to-dos:
+
+# horziontal table and Chart for second row
+# - https://plotly.com/python/figure-factory-subplots/
+
+##############################################################
 
 # COLOR_VAR
 color_extralight = 'rgb(247,251,255)'

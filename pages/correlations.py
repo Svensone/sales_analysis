@@ -1,8 +1,19 @@
 import dash_core_components as dcc
 import dash_html_components as html
+
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
+from app import app
+
 import pathlib
+
+##############################################################
+#  to-dos:
+# 
+# https://plotly.com/python/heatmaps/
+# heatmapz - create in Colab and import as html
+
+##############################################################
 
 # from heatmap import heatmap,     0\ corrplot
 from html_blocks import get_disclaimer_block, get_image_block
@@ -47,7 +58,6 @@ def create_layout(app, df):
                         ],
                         className="row ",
                     ),
-
                     # Row Key Findings Correlation
                     ##########################
                     html.Div(
@@ -230,28 +240,33 @@ def create_layout(app, df):
 
 # Correlation Matrix with plotly:
 
-# @app.callback(
-#     Output('corr_matrix', 'figure'),
-#     [Input('corr_selector', 'value')]
-# )
-# def corr_graph(corr_selector):
-#     # limit columns since RAM Heroku limited
-#     df_corr = df_corr[['Store', 'DayOfWeek', 'Sales', 'Customers',
-#                        'Day', 'Month', 'Year', 'WeekOfYear', 'SalesPerCustomer']]
-#     print('hello')
-#     data = [
-#         go.Heatmap(
-#             z=df_corr,
-#             x=df_corr.columns,
-#             y=df_corr.columns,
-#             colorscale='Viridis',
-#             reversescale=False,
-#             opacity=1.0
-#         )
-#     ]
-#     layout = go.Layout(
-#         xaxis=dict(ticks='', nticks=36),
-#         yaxis=dict(ticks=''),
-#         width=600, height=600)
-#     fig2 = go.Figure(data=data, layout=layout)
-#     return fig2
+##################
+# page 4: Correlations 
+##################
+# Correlation Matrix with plotly:
+@app.callback(
+    Output('corr_matrix', 'figure'),
+    [Input('corr_selector', 'value')]
+)
+def corr_graph(corr_selector):
+    # limit columns since RAM Heroku limited
+    df_corr = df[['Store','DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo',    'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance','PromoInterval']]
+    value_x = ['Store','DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo',    'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance','PromoInterval']
+    data = [
+        go.Heatmap(
+            z=df_corr.corr(),
+            # x=['Store', 'DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo', 'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance', 'PromoInterval'],
+            # y=['Store', 'DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo', 'StateHoliday', 'SchoolHoliday', 'Day', 'Year', 'WeekOfYear', 'SalesPerCustomer', 'Promo2', 'StoreType', 'Assortment', 'CompetitionDistance', 'PromoInterval'],
+            ids= value_x,
+            colorscale='Viridis',
+            reversescale=False,
+            type= 'heatmap',
+            opacity=0.8,
+        )
+    ]
+    layout = go.Layout(
+        xaxis=dict(ticks='', nticks=36),
+        yaxis=dict(ticks=''),
+        width=600, height=600)
+    fig2 = go.Figure(data=data, layout=layout)
+    return fig2
