@@ -6,6 +6,8 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+
+import json
 import pathlib
 import pandas as pd
 import numpy as np
@@ -14,26 +16,20 @@ import numpy as np
 from pages import (
     overview,
     explAnalysis,
-    # time_series,
+    profitability,
     correlations,
     predictions,
     review,
 )
 ##############################################################
 #  to-dos:
-
 # in App
-###############
 # https://plotly.com/python/heatmaps/# 
-
-# in Colab import as Html:
-###############
-# heatmapz - create in Colab and import as html
-# Outlier Test :  https://plotly.com/python/v3/outlier-test/
-# 
-# Implement : js.animation (from Bali homepage) with
+# from Colab import as Html:
+# - heatmapz - create in Colab and import as html
+# - Outlier Test :  https://plotly.com/python/v3/outlier-test/
+# - Implement : js.animation (from Bali homepage) with
 # https://community.plotly.com/t/how-can-i-use-my-html-file-in-dash/7740
-
 ##############################################################
 
 # Data
@@ -81,8 +77,8 @@ app.layout = html.Div(
 def display_page(pathname):
     if pathname == "/dash-financial-report/explAnalysis":
         return explAnalysis.create_layout(app, df)
-    # elif pathname == "/dash-financial-report/time_series":    # add later when Design clean
-    #     return time_series.create_layout(app)
+    elif pathname == "/dash-financial-report/profitability":    # add later when Design clean
+        return profitability.create_layout(app, df)
     elif pathname == "/dash-financial-report/correlations":
         return correlations.create_layout(app, df)
     elif pathname == "/dash-financial-report/predictions":
@@ -93,7 +89,7 @@ def display_page(pathname):
         return (
             overview.create_layout(app, df),
             explAnalysis.create_layout(app, df),
-            # time_series.create_layout(app),
+            profitability.create_layout(app, df),
             correlations.create_layout(app, df),
             predictions.create_layout(app, df),
             # review.create_layout(app),
@@ -104,14 +100,13 @@ def display_page(pathname):
 # INDIVIDUAL CALLBACKS FOR Graphs
 #######################
 # page 1 overview-graph
-##################
+#######################
 @app.callback(
     Output('overview_graph', 'figure'),
     [Input('overview_selectors', 'value')]
 )
 def overview_graph_1(select):
     # print('Overview Graph Selector :' + select)
-    # add rangeslider
     data_overview = df.groupby(['YearMonth_timestamp']).agg({
         'Sales': np.sum,
         'Customers': np.sum,
@@ -197,7 +192,29 @@ def overview_graph_1(select):
 # page 2: explanatory / statistical Data Analysis
 ##################
 
-# page 3: Profitability / Time Series - in the making               # in the making
+# page: Seasonality - Trend - Stationarity
+
+@app.callback(
+    Output('seasonality_graph', 'figure'),
+    [Input('seasonality_selector', 'value')]
+)
+
+def seasonality(store_type_select):
+    sales_a2 = df.groupby(['Date', 'StoreType']).sum()
+    sales_a2 = sales_a2.reset_index().set_index('Date')
+    sales_a2.index = pd.to_datetime(sales_a2.index)
+    sales_a2 = sales_a2[sales_a2.StoreType == 'a']
+    sales_a2 = sales_a2['Sales'].astype('float')
+    print(sales_a2)
+
+    resample_a = sales_a2.resample('W').sum()
+    print(resample_a)
+
+
+    fig= px.line(y=resample_a)
+    return fig
+
+# page: Profitability    # in the making
 ##################
 # @app.callback(
 #     Output('time-series-graph', 'figure'),
@@ -215,7 +232,6 @@ def overview_graph_1(select):
     #                     hovermode="closest", plot_bgcolor='rgb(0,0,0,0)')
     # return fig_1
 
-# Correlation Matrix with plotly:
 ##################
 # page 4: Correlations 
 ##################
@@ -248,18 +264,17 @@ def corr_graph(corr_selector):
     return fig2
 
 #################
-# page Preditions
+# page: Preditions
 ##################
 # Facebook Prophet
-
-# @app.callback(
-#     Output('html_figure', 'figure'), 
-#     [Input('html_figure_input', 'values')]
-#     )
-# def prophet_html(input):
-#     html_file = app.get_asset_url('plotly_fb_test.html')
-#     fig = html_file
-
+@app.callback(
+    Output('prophet_components', 'figure'), 
+    [Input('prophet_components_input', "n_clicks")]
+    )
+def prophet_html(btn_clicks):
+    cache = 'fig_prophet_components2.json'
+    with open (cache, 'r') as f:
+        return json.load(f)
 
 #################
 # page 5 Review (in the making)

@@ -60,11 +60,11 @@ def get_menu():
                 href="/dash-financial-report/explAnalysis",
                 className="tab",
             ),
-            # dcc.Link(                         # in the making
-            #     "Time-Series",
-            #     href="/dash-financial-report/time_series",
-            #     className="tab",
-            # ),
+            dcc.Link(                         # in the making
+                "Profitability",
+                href="/dash-financial-report/profitability",
+                className="tab",
+            ),
             dcc.Link(
                 "Correlations", 
                 href="/dash-financial-report/correlations", 

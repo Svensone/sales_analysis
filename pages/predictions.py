@@ -18,81 +18,61 @@ def create_layout(app, df):
             # page 5
             html.Div(
                 [
-                    # Disclaimer row
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.H6(
-                                        [' inner html ']),
-                                    # html.Div([
-                                    #     dash_dangerously_set_inner_html.DangerouslySetInnerHTML(
-									# 		'''
-
-									# 		'''),
-                                    # ])
-                                ],
-                            )
-                        ],
-                        className="row ",
-                    ),
-                    # Disclaimer row
-                    # html.Div(
-                    #     [
-                    #         html.Div(
-                    #             [
-                    #                 html.H6(
-                    #                     ["Facebook Prophet - Future Sales Prediction "],
-                    #                     className="disclaimer padded"),
-                    #                 html.H6([
-                    #                     'with dangerously set inner html'
-                    #                 ]),
-                    #                 # # with callback
-                    #                 # dcc.Input(
-                    #                 #     id='html_figure_input', value='initial value', type="text"),
-                    #                 # html.H4('Use Pandas HTML Export!'),
-                    #                 # html.Div(id='html_figure')
-                    #                 # with dangerously set
-                    #                 html.Div([
-                    #                 ])
-                    #             ],
-                    #         )
-                    #     ],
-                    #     className="row ",
-                    # ),
                     # IFrame Row
                     #####################
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.H6(['.html file in html.Img() not working']),
-                                    html.Iframe(
-                                        src=html_test, 
-                                        height= 650, 
-                                        width= 900,
-                                        style={'border': 'none'}
-                                        )
+                                    html.H5(['Sales Forecasting'],
+                                            className="subtitle padded"
+                                            ),
+                                    html.H6(['Comparing Facebook Prophet - Tableau - Neuronal Network Pytorch'],
+                                            className="disclaimer padded"
+                                            ),
                                 ]
                             )
                         ],
                         className="row ",
                     ),
-                    # Disclaimer row
-                    # html.Div(
-                    #     [
-                    #         html.Div(
-                    #             [
-                    #                 html.H6(
-                    #                     [' NOT CLEAN - need resize etc. Test with Iframe ']),
-                    #                 html.Div([
-                    #                     html.Iframe(src=html_test),
-                    #                 ], style={'height': '70vh'}),
-                    #             ],
-                    #         )
-                    #     ],
-                    #     className="row ",
-                    # ),
+                    # IFrame Row
+                    #####################
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6(['Sales Prediction Fb Prophet - 7 days'],
+                                            className="disclaimer padded"),
+                                    html.Iframe(
+                                        src=html_test,
+                                        height=650,
+                                        width=920,
+                                        style={'border': 'none'}
+                                    )
+                                ]
+                            )
+                        ],
+                        className="row ",
+                    ),
+                    # JSON File from Colab Notebook
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+
+                                    html.H6(
+                                        ['Prophet Components Analysis Graph'],
+                                        className="disclaimer padded"
+                                    ),
+                                    # with callback
+                                    html.Button(
+                                        "Click me", id='prophet_components_input'),
+                                    dcc.Graph(id='prophet_components'),
+                                ],
+                            )
+                        ],
+                        className="row ",
+                    ),
                 ],
                 className="sub_page",
             ),
