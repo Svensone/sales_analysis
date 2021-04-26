@@ -69,7 +69,8 @@ def create_layout(app, df):
                     width=3,),
         name= "Empirical Cumulative Distr. of daily Sales",
         mode="lines",
-    ), row=1, col=1)
+    ), 
+    row=1, col=1)
     fig_ecdf.append_trace(go.Scatter(
         x = data_ecdf_cust,
         y = y_Customers,
@@ -280,7 +281,6 @@ def create_layout(app, df):
                     #     ],
                     #     className="row ",
                     # ),
-
                     
                     # Row Distribution
                     ##################
