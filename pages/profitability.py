@@ -14,31 +14,13 @@ from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
-# COLOR_VAR
-color_extralight = 'rgb(247,251,255)'
-color_bg = 'rgb(222,235,247)'
-color_main = 'rgb(33,113,181)'
-color_dark = 'rgb(8,48,107)'
-
+from variables import color_extralight, color_bg, color_light, color_main_light, color_main, color_dark_light, color_dark, color_transparent, color_contr, color_contr2
 
 def create_layout(app, df):
     # SpC Overview Analysis (Bar Total, Line (rolling ave. & LIne pct_change))
     # ######################
     #  selector for Storetype
-
-    # Week Day Analysis (Bar plot)
-    # ######################
-    fig_weekDay_sales = px.bar(df, x='DayOfWeek', y='Sales')
-    # fig_weekDay_sales.update_traces(color=color_dark)
-    fig_weekDay_sales.update_layout(
-        paper_bgcolor='rgb(0,0,0,0)', hovermode="closest", plot_bgcolor='rgb(0,0,0,0)')
-    fig_weekDay_customer = px.bar(df, x='DayOfWeek', y='Customers')
-    # fig_weekDay_customer.update_traces(color=color_dark)
-    fig_weekDay_customer.update_layout(
-        paper_bgcolor='rgb(0,0,0,0)', hovermode="closest", plot_bgcolor='rgb(0,0,0,0)')
-
-#
-    # python app.py
+    
     return html.Div(
         [
             Header(app),
@@ -46,33 +28,16 @@ def create_layout(app, df):
             html.Div(
                 [
                     ################
-                    # Seasonality Analysis
+                    # Profitability Analysis
                     ################
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.H6(['Seasonality'],
+                                    html.H6(['Profitability'],
                                             className='subtitle padded'),
                                     html.Div([
-                                        dcc.Dropdown(
-                                            id='seasonality_selector',
-                                            options=[
-                                                {"label": "Storetype 'A",
-                                                    "value": 'a'},
-                                                {"label": "Storetype 'B",
-                                                    "value": 'b'},
-                                                {"label": "Storetype 'C",
-                                                    "value": 'c'},
-                                                {"label": "Storetype 'D",
-                                                    "value": 'd'},
-                                            ],
-                                            value='a',
-                                            clearable=False,
-                                        ),
-                                        dcc.Graph(
-                                            id='seasonality_graph',
-                                        )])
+                                        ])
                                 ],
                             )
                         ],
@@ -90,35 +55,12 @@ def create_layout(app, df):
                     ################
                     html.Div([
                         html.Div([
-                            html.H6(['Analysis'],
-                                    className='disclaimer padded'),
-                        ]
-                        ),
-                    ],
+                            html.H6(['Outlier Analysis'],
+                                    className='subtitle padded'),
+                                ]
+                                ),
+                            ],
                         className='row'
-                    ),
-                    # Disclaimer row
-                    ################
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.H6(
-                                        ["Disclamer : "],
-                                        className="disclaimer padded"),
-                                    html.Strong(
-                                        "More Time Series Analysis in Notebook, see::"),
-                                    html.Br(),
-                                    html.A(
-                                        html.Button(
-                                            "Github", className="disclaimer_button"),
-                                        href="https://github.com/Svensone/kaggle/blob/main/Competitions/Sales_Performance_Analysis_%26_Prediction_Rossmann.ipynb",
-                                        target='_blank',
-                                    ),
-                                ],
-                            ),
-                        ],
-                        className="row ",
                     ),
                 ],
                 className="sub_page",
@@ -126,40 +68,3 @@ def create_layout(app, df):
         ],
         className="page",
     )
-
-    #     html.H6(['Day of Week Sales-Analysis'],
-    #             className='subtitle padded'),
-    #     html.Div([
-    #         html.H6(['Sales'], className='padded'),
-    #         html.Br(),
-    #         html.Div([
-    #             dcc.Dropdown(
-    #                 id='weekDay_sales_selector',
-    #                 options=[
-    #                     {"label": "Storetype 'A", "value": 'a'},
-    #                     {"label": "Storetype 'B", "value": 'b'},
-    #                     {"label": "Storetype 'C", "value": 'c'},
-    #                     {"label": "Storetype 'D", "value": 'd'},
-    #                 ],
-    #                 value='a',
-    #                 clearable=False,
-    #             ),
-    #             dcc.Graph(
-    #                 id='weekDay_sales',
-    #                 figure=fig_weekDay_sales,),
-    #                 ]),
-    #             ],
-    #         ),
-    #     html.Div([
-    #         html.H6(['Customers'], className='padded'),
-    #         html.Br(),
-    #         dcc.Graph(
-    #             id='weekDay_customer',
-    #             figure=fig_weekDay_customer,),
-    #         ]
-    #         ),
-    #     ], className='six columns'
-    #     ),
-    # ],
-    #     className='row'
-    # ),

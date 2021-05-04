@@ -15,7 +15,7 @@ https://github.com/Svensone/sales_performance_analysis_rossmann
 conda create -n sales python=3.7.10
 ```
 * Windows
-conda activate sales
+conda activate venv
 
 Run the app
 ```

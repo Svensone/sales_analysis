@@ -12,18 +12,10 @@ from statsmodels.distributions.empirical_distribution import ECDF
 import pandas as pd
 import numpy as np
 import pathlib
-
-# COLOR_VAR
-color_extralight = 'rgb(247,251,255)'
-color_bg = 'rgb(222,235,247)'
-color_main = 'rgb(33,113,181)'
-color_dark = 'rgb(8,48,107)'
-color_contr = '#fde725'
-color_contr2 = '#b5de2b'
+from variables import color_a, color_b, color_c, color_d, color_extralight, color_bg, color_light, color_main_light, color_main, color_dark_light, color_dark, color_transparent, color_contr, color_contr2
 
 ###########################################
 # TO DO !!!!!
-# Distplot : https://plotly.com/python/distplot/
 # Mixed Subplot : https://plotly.com/python/mixed-subplots/
 #######################################################
 
@@ -47,10 +39,13 @@ def create_layout(app, df):
     sales_data_overview = [
         ['Total Number of Sales entries', total_count],
         ['Days with no Sales-value', no_salesClosed_count],
+        ['Average Sales per Store (month)', 'n'],
+        ['Average daily Sales per Customer ', 'not yet'],
     ]
     store_data_overview = [
         ['Nr of Storetypes', 4], #df.StoreType.unique().shape[0]
         ['Nr. of different Assortment levels', 3], # df.Assortment.unique().shape[0]
+        ['Mean Distance to Competitor', '5404m'], #df.CompetitionDistance.mean()
     ]
 
     # ECDF graph
@@ -106,26 +101,126 @@ def create_layout(app, df):
         showlegend=True,
     )
 
-    # Row 2 : Missing Values Analysis
+    # Row 2 - Distplot Sales
+    #####################
+    # Distplot Sales per Storetype
+    # RAM overload if for all storetype with e.g hist_a = df[df['StoreType']== 'a']['Sales']
+    # using 4 random Stores from each StoreType Group as "Representatives" - shorten calculation time
+    store_a = 1098; store_b = 676; store_c = 869; store_d = 118 #using np.random.choice(store_d, 1) see data.py for
+    hist_a = df[df['Store']== store_a]['Sales']
+    hist_b = df[df['Store'] == store_b]['Sales']
+    hist_c = df[df['Store']== store_c]['Sales']
+    hist_d = df[df['Store'] == store_d]['Sales']
+    hist_data = [hist_a, hist_b, hist_c, hist_d]
+    group_label = ['Storetype A', 'Storetype B', 'Storetype C', 'Storetype D'] 
+    # with plotly Express: fig_distplot=  px.histogram(df['Sales'], x="Sales", marginal="rug")
+    fig_distplot = ff.create_distplot(
+        hist_data, 
+        group_label, 
+        bin_size= 100, # customize bin size = bin_size=[.1, .25, .5, 1]
+        colors = [color_a, color_b, color_c, color_d]
+        ) 
+    fig_distplot.update_layout(
+        # title= 'Distplot',
+        # font=dict(
+        #     family='Helvetica',
+        # ),
+        autosize=True,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        # height=400,
+        # hovermode="closest",
+        barmode = 'group',
+        legend={
+            # "x": -0.0228945952895,
+            # "y": -0.189563896463,
+            "orientation": "h",
+            "yanchor": "top",
+        },
+        margin={
+            "r": 10,
+            "t": 30,
+            "b": 30,
+            "l": 30,
+        },
+        showlegend=True,
+    )
+
+    # Row Customer Distribution
+    ##################
+    fig_distplot2 = px.histogram(df, x="Customers", color="StoreType",
+                marginal="violin", # or violin, rug
+                hover_data=['Customers', 'Sales'], # df.columns
+                nbins=500,
+                color_discrete_sequence = [color_a, color_b, color_c, color_d],
+    )
+    fig_distplot2.update_layout(
+        # title= 'Distplot',
+        # font=dict(
+        #     family='Helvetica',
+        # ),
+        autosize=True,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        # height=300,
+        # hovermode="closest",
+        barmode = 'group',
+        legend={
+            # "x": -0.0228945952895,
+            # "y": -0.189563896463,
+            "orientation": "h",
+            "yanchor": "top",
+        },
+        # margin={
+        #     "r": 10,
+        #     "t": 30,
+        #     "b": 30,
+        #     "l": 30,
+        # },
+        showlegend=True,
+        xaxis = dict(
+            title_text = ' ',
+            # title_standoff = 25
+            ),
+        yaxis = dict(
+        # title_standoff = 5,
+        ),
+    )
+
+    # Row: Missing Values Analysis
     #################
     # for faster App loading (see data.py for calculation):
     # Pie Sales Values Missing
     labels_pie = ['Sunday', 'Holiday', 'Others']
-    values_pie = [[141137, 0, 31680]]
+    values_pie = [141137, 0, 31680]
     data_pie = [
         dict(
             type='pie',
             labels=labels_pie,
             values=values_pie,
-            title='Sales Values Missing',
             name='Missing Values in Dataset',
             marker=dict(
                 colors=[color_bg, color_main, color_dark]
             ),
-        ),
-    ]
+        ),]
     pie_fig = go.Figure(data=data_pie)
-
+    pie_fig.update_layout(legend=dict(
+        x=0,
+        y=1,
+        traceorder="reversed",
+        # title_font_family="Times New Roman",
+        font=dict(
+            # family="Courier",
+            size=12,
+            color="black"
+        ),
+        bgcolor= 'rgba(0,0,0,0)',
+        bordercolor= color_dark,
+        borderwidth=2,
+        ),
+        showlegend=False,
+        title= 'Sales',
+    )
     # Pie Store Values Missing
     data_1 = df_stores_raw.isnull().sum().to_frame()
     data_1 = data_1[(data_1[0] != 0)]
@@ -135,94 +230,18 @@ def create_layout(app, df):
             type='pie',
             labels= data_1.index,
             values= data_1['missing_values'],
-            title='Store Dataset: Values Missing',
             name='Missing Values',
             marker=dict(
-                colors=px.colors.sequential.Viridis,
+                colors=[color_bg, color_main, color_dark, color_light, color_dark_light ],
             ),
         )
     ]
     pie_fig_store = go.Figure(data=data_pie_stores)
+    pie_fig_store.update_layout(
+        showlegend=False, 
+        title='Store Dataset',
+        )
     
-    # Row 3 - Distplot Sales
-    #####################
-    # Distplot Sales per Storetype
-
-    # RAM overload if for all
-    # hist_a = df[df['StoreType']== 'a']['Sales']
-    # hist_b = df[df['StoreType'] == 'b']['Sales']
-    # hist_c = df[df['StoreType']== 'c']['Sales']
-    # hist_d = df[df['StoreType'] == 'd']['Sales']
-    # using 4 random Stores from each StoreType Group as "Representatives" - calculation for all to long
-    # stores_a = df[df['StoreType'] == 'a']['Store'].unique()
-    # stores_b = df[df['StoreType'] == 'b']['Store'].unique()
-    # stores_c = df[df['StoreType'] == 'c']['Store'].unique()
-    # stores_d = df[df['StoreType'] == 'd']['Store'].unique()
-
-
-    # store_a = 1098 #np.random.choice(store_a, 1)
-    # store_b = 676 #np.random.choice(store_b, 1)
-    # store_c = 869 #np.random.choice(store_c, 1)
-    # store_d = 118 #np.random.choice(store_d, 1)
-    # hist_a = df[df['Store']== store_a]['Sales']
-    # hist_b = df[df['Store'] == store_b]['Sales']
-    # hist_c = df[df['Store']== store_c]['Sales']
-    # hist_d = df[df['Store'] == store_d]['Sales']
-
-    # hist_data = [hist_a, hist_b, hist_c, hist_d]
-    # group_label = ['Storetype A', 'Storetype B', 'Storetype C', 'Storetype D'] 
-    
-    # fig_distplot = ff.create_distplot(
-    #     hist_data, 
-    #     group_label, 
-    #     colors = [color_contr2, color_dark, color_contr, color_main]
-    #     ) # customize bin size = bin_size=[.1, .25, .5, 1]
-    # fig_distplot.update_layout(
-    #     # title= 'Distplot',
-    #     font=dict(
-    #         family='Helvetica',
-    #     ),
-    #     autosize=True,
-    #     paper_bgcolor='rgba(0,0,0,0)',
-    #     plot_bgcolor='rgba(0,0,0,0)',
-    #     # height=400,
-    #     # hovermode="closest",
-    #     barmode = 'group',
-    #     legend={
-    #         # "x": -0.0228945952895,
-    #         # "y": -0.189563896463,
-    #         "orientation": "h",
-    #         "yanchor": "top",
-    #     },
-    #     margin={
-    #         "r": 10,
-    #         "t": 30,
-    #         "b": 30,
-    #         "l": 30,
-    #     },
-    #     showlegend=True,
-    # )
-    # fig_sales_distplot = fig_distplot
-    # # with plotly Express
-    # # fig_sales_distplot=  px.histogram(df['Sales'], x="Sales", marginal="rug")
-
-    # # Pie Graph 2 - Sales-Storetype Percentage
-    # sales_storetype = df.groupby(['StoreType'])['Sales'].sum()
-    # data_pie_stores = [
-    #     dict(
-    #         type='pie',
-    #         labels=list(sales_storetype.index),
-    #         values=list(sales_storetype),
-    #         name='Storetype',
-    #         title="Storetypes: Pct. of Sales",
-    #         insidetextorientation='radial',
-    #         marker=dict(
-    #             colors=px.colors.sequential.Viridis,
-    #         ),
-    #     ),
-    # ]
-    # sales_fig_store = go.Figure(data=data_pie_stores,)
-
     return html.Div(
         [
             Header(app),
@@ -232,10 +251,19 @@ def create_layout(app, df):
                     ############
                     html.Div(
                         [
+                            html.H5(['Statistical and explorative Analysis'],
+                                            className="subtitle padded",
+                                            style={
+                                                # 'paddingBottom': "30",
+                                                # 'paddingTop': '30',
+                                                }
+                                            ),
+                            html.Br([]),
                             html.Div(
                                 [
                                     html.H6(
-                                        ["Sales Data"], className="subtitle padded"
+                                        ["Sales Data"], 
+                                        className="subtitle padded"
                                     ),
                                     html.Br([]),
                                     html.Table(make_dash_table_list(
@@ -244,10 +272,11 @@ def create_layout(app, df):
                                         ["Stores Data"], className="subtitle padded"
                                     ),
                                     html.Br([]),
+                                    html.Br([]),
                                     html.Table(make_dash_table_list(
                                         store_data_overview), className='table'),
                                 ],
-                                className="four columns",
+                                className="five columns",
                             ),
                             html.Div(
                                 [
@@ -258,57 +287,64 @@ def create_layout(app, df):
                                         figure=fig_ecdf,
                                     )
                                 ],
-                                className="eight columns",
+                                className="seven columns",
+                                style={'paddingLeft': "100"}
                             ),
                         ],
                         className="row ",
                     ),
-                    # Row Distribution - Change to Displot with Storetypes/Assortment/
-                    ##################
-                    # html.Div(
-                    #     [
-                    #         html.Div(
-                    #             [
-                    #                 html.H6("Test",
-                    #                         className="subtitle padded"),
-                    #                 dcc.Graph(
-                    #                     id="graph_histo",
-                    #                     figure= fig_sales_distplot,
-                    #                 )
-                    #             ],
-                    #             className="twelve columns",
-                    #         ),
-                    #     ],
-                    #     className="row ",
-                    # ),
-                    
-                    # Row Distribution
+                    # Row Distplot
                     ##################
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.H6("Test2",
+                                    html.H6("Distribution of Sales Values ",
                                             className="subtitle padded"),
                                     dcc.Graph(
-                                        id="graph_histo_kde_rug",
-                                    ),
+                                        id="graph_histo",
+                                        figure= fig_distplot,
+                                    )
                                 ],
-                                className="eight columns",
+                                className="twelve columns",
                             ),
-                            # Pie Sales total per stortype
+                        ],
+                        className="row ",
+                    ),
+                    # Row Customer Distribution
+                    ##################
+                    html.Div(
+                        [
                             html.Div(
                                 [
-                                    html.H6("Sales of Storetypes",
+                                    html.H6("Customer Distribution",
                                             className="subtitle padded"),
-                                    # dcc.Graph(
-                                    #     id='pie_store',
-                                    #     figure=sales_fig_store,
-                                    #     config={"displayModeBar": False},
-                                    # ),
+                                    # dcc.RadioItems(
+                                    #     id='customer_dist_selector',
+                                    #     options=[
+                                    #         {'label': x, 'value': x} for x in ['total', 'Storetype']
+                                    #         ],
+                                    #     value='total'),
+                                    dcc.Graph(
+                                        id="customer_dist",
+                                        figure=fig_distplot2,
+                                    ),
                                 ],
-                                className="four columns",
+                                className="twelve columns",
                             ),
+                            # # Pie Sales total per stortype
+                            # html.Div(
+                            #     [
+                            #         html.H6("Storetype % of Sales",
+                            #                 className="subtitle padded"),
+                            #         dcc.Graph(
+                            #             id='pie_store',
+                            #             figure=fig_sales_storetype,
+                            #             # config={"displayModeBar": False},
+                            #         ),
+                            #     ],
+                            #     className="five columns",
+                            # ),
                         ],
                         className="row ",
                     ),
@@ -348,26 +384,26 @@ def create_layout(app, df):
                         className="row ",
                     ),
                     ##################
-                    # Row Outlier test with plotly
+                    # Row Outlier test with plotly = move to profitability page
                     # https://plotly.com/python/v3/outlier-test/
                     ##################
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.H6("Outlier Detection",
-                                            className="subtitle padded"),
-                                    # html.Img(
-                                    #     src=app.get_asset_url(
-                                    #         'img/outlier_detection_sns.jpg'),
-                                    #     style={'width': '100%'}
-                                    # ),
-                                ],
-                                className="twelve columns",
-                            )
-                        ],
-                        className="row ",
-                    ),
+                    # html.Div(
+                    #     [
+                    #         html.Div(
+                    #             [
+                    #                 html.H6("Outlier Detection",
+                    #                         className="subtitle padded"),
+                    #                 html.Img(
+                    #                     src=app.get_asset_url(
+                    #                         'img/outlier_detection_sns.jpg'),
+                    #                     style={'width': '100%'}
+                    #                 ),
+                    #             ],
+                    #             className="twelve columns",
+                    #         )
+                    #     ],
+                    #     className="row ",
+                    # ),
                 ],
                 className="sub_page",
             ),

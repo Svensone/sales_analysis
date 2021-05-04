@@ -1,16 +1,11 @@
 import dash
 import dash_core_components as dcc
-from dash.dependencies import Input, Output
-import dash_dangerously_set_inner_html
-
 import dash_html_components as html
-from utils import Header
 
+from utils import Header
 import pandas as pd
 
-
 def create_layout(app, df):
-    img_test = app.get_asset_url('bg.jpg')
     html_test = app.get_asset_url('plotly_fb_test.html')
     return html.Div(
         [
@@ -18,7 +13,7 @@ def create_layout(app, df):
             # page 5
             html.Div(
                 [
-                    # IFrame Row
+                    # Row
                     #####################
                     html.Div(
                         [
@@ -27,25 +22,44 @@ def create_layout(app, df):
                                     html.H5(['Sales Forecasting'],
                                             className="subtitle padded"
                                             ),
+                                    html.Br(),
+                                    html.Br(),
                                     html.H6(['Comparing Facebook Prophet - Tableau - Neuronal Network Pytorch'],
+                                            className="subtitle padded"
+                                            ),
+                                    html.H6(['Daily Sales Prediction of Store 12'],
                                             className="disclaimer padded"
                                             ),
+                                    dcc.Graph(
+                                        id= 'prediction_graph',
+                                    ),
+                                    dcc.Dropdown(
+                                            id='prediction_selectors',
+                                            options=[
+                                                {"label": "FB-Prophet", "value": 'prophet'},
+                                                {"label": "FastAI Neural Net", "value": 'fastai'},
+                                                {"label": "Tableau", "value": 'tableau'},
+                                                {"label": "Power BI", "value": 'powerBI'},
+                                            ],
+                                            value='prophet',
+                                            clearable=False,
+                                        ),
                                 ]
                             )
                         ],
                         className="row ",
                     ),
-                    # IFrame Row
+                    # Row Prophet Time Series (IFrame)
                     #####################
                     html.Div(
                         [
                             html.Div(
                                 [
                                     html.H6(['Sales Prediction Fb Prophet - 7 days'],
-                                            className="disclaimer padded"),
+                                            className="subtitle padded"),
                                     html.Iframe(
                                         src=html_test,
-                                        height=650,
+                                        height=500,
                                         width=920,
                                         style={'border': 'none'}
                                     )
@@ -54,20 +68,22 @@ def create_layout(app, df):
                         ],
                         className="row ",
                     ),
-                    # JSON File from Colab Notebook
+                    # Row Prophet Components (JSON File from Colab Notebook)
                     html.Div(
                         [
                             html.Div(
                                 [
-
                                     html.H6(
                                         ['Prophet Components Analysis Graph'],
-                                        className="disclaimer padded"
+                                        className="subtitle padded"
                                     ),
-                                    # with callback
-                                    html.Button(
-                                        "Click me", id='prophet_components_input'),
                                     dcc.Graph(id='prophet_components'),
+                                    dcc.RadioItems(
+                                        id='prophet_components_input',
+                                        options=[
+                                            {'label': 'Component', 'value': 'week'}
+                                            ],
+                                        value='week'),
                                 ],
                             )
                         ],

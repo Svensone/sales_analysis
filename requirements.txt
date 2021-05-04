@@ -3,7 +3,8 @@ gunicorn
 pandas
 statsmodels
 nbformat # for plotly pie chart necessary
+isoweek #for complete_data() in data.py
 # python-dotenv
 # mysql-connector-python
 
-dash-dangerously-set-inner-html
+# dash-dangerously-set-inner-html

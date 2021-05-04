@@ -65,13 +65,18 @@ def get_menu():
                 href="/dash-financial-report/profitability",
                 className="tab",
             ),
+            dcc.Link(                         # in the making
+                "Seasonality",
+                href="/dash-financial-report/test",
+                className="tab",
+            ),
             dcc.Link(
                 "Correlations", 
                 href="/dash-financial-report/correlations", 
                 className="tab"
             ),
             dcc.Link(
-                "AI Sales Predictions",
+                "Predictions",
                 href="/dash-financial-report/predictions",
                 className="tab",
             ),
