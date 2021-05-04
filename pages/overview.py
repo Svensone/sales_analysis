@@ -52,6 +52,22 @@ def create_layout(app, df):
     fig_sales_storetype = go.Figure(data= data_pie_storetype)
     fig_sales_storetype.update_layout(showlegend=False)
 
+    # # Pie Graph - Assortment Percentage of Total Sales
+    sales_assortm = df.groupby(['Assortment'])['Sales'].sum().to_frame()
+    sales_assortm.columns = ['total_sales']
+    data_pie_assortm = [
+        dict(
+            type='pie',
+            labels= sales_assortm.index,
+            values= sales_assortm['total_sales'],
+            name='Assortment % of Total-Sales',
+            marker=dict(
+                colors=[color_a, color_b, color_c, color_d],
+            ),
+        )]
+    fig_sales_assortm = go.Figure(data= data_pie_assortm)
+    fig_sales_assortm.update_layout(showlegend=False)
+
     return html.Div(
         [
             html.Div([Header(app)]),
@@ -244,7 +260,7 @@ def create_layout(app, df):
                                         # config={"displayModeBar": False},
                                     ),
                                 ],
-                                className="five columns",
+                                className="six columns",
                             ),
                             # Assortment Type Sales-%
                             html.Div(
@@ -253,6 +269,11 @@ def create_layout(app, df):
                                         "Assortment Type Sales pct of Total",
                                         className="subtitle padded",
                                     ),
+                                    dcc.Graph(
+                                        id='pie_assortm',
+                                        figure=fig_sales_assortm,
+                                        # config={"displayModeBar": False},
+                                    ),
                                 ],
                                 className="six columns",
                             ),
@@ -260,7 +281,6 @@ def create_layout(app, df):
                         className="row",
                         # style={"margin-bottom": "35px"},
                     ),
-
                 ],
                 className="sub_page",
             ),

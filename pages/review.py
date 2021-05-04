@@ -8,7 +8,6 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
 from utils import Header
-from data import complete_data
 import pathlib
 
 # data path
@@ -17,25 +16,27 @@ DATA_PATH = PATH.joinpath("data")  # .resolve
 # df1 = pd.read_csv(DATA_PATH.joinpath('data_full.csv'), low_memory=False)
 
 def create_layout(app, df):
-    # df1 = complete_data()[:5] # long time
-    df1 = pd.read_csv(DATA_PATH.joinpath('data_full.csv'), low_memory=False)
-    df1 = df1[:5]
 
-    fig_table = go.Figure(
-        data=[
-            go.Table(
-            header=dict(
-                values=list(df1.columns[:3]),
-                # fill_color='blue',
-                align='left',
-            ),
-            cells= dict(
-                values=[df1.Sales, df1.Customers, 
-                df1.SalesPerCustomer],
-                align='left',
-            )
-        )]
-    )
+    ## Test if Database GoogleCloud SQL working - successfull / 01.05.2021 disconnected since GCloud expensive ;)
+    # df1 = complete_data()[:5] # long time
+    # df1 = pd.read_csv(DATA_PATH.joinpath('data_full.csv'), low_memory=False)
+    # df1 = df1[:5]
+
+    # fig_table = go.Figure(
+    #     data=[
+    #         go.Table(
+    #         header=dict(
+    #             values=list(df1.columns[:3]),
+    #             # fill_color='blue',
+    #             align='left',
+    #         ),
+    #         cells= dict(
+    #             values=[df1.Sales, df1.Customers, 
+    #             df1.SalesPerCustomer],
+    #             align='left',
+    #         )
+    #     )]
+    # )
 
     return html.Div(
         [
@@ -54,9 +55,8 @@ def create_layout(app, df):
                                     html.Div(
                                         [
                                             html.P(
-                                                "Datatable test"
+                                                "Datatable test succesfull"
                                             ),
-                                            dcc.Graph(figure=fig_table)
                                         ],
                                         style={"color": "#7a7a7a"},
                                     ),
@@ -115,10 +115,6 @@ def create_layout(app, df):
                         ],
                         className="row ",
                     ),
-                    # Test Row
-
-
-
                 ],
                 className="sub_page",
             ),

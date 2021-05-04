@@ -280,7 +280,7 @@ def create_layout(app, df):
                             ),
                             html.Div(
                                 [
-                                    html.H6("Empirical CDF of Sales",
+                                    html.H6("Empirical CDF of Sales and Customers",
                                             className="subtitle padded"),
                                     dcc.Graph(
                                         id="ecdf-graph",

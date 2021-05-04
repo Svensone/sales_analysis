@@ -27,9 +27,6 @@ def create_layout(app, df):
                                     html.H6(['Comparing Facebook Prophet - Tableau - Neuronal Network Pytorch'],
                                             className="subtitle padded"
                                             ),
-                                    html.H6(['Daily Sales Prediction of Store 12'],
-                                            className="disclaimer padded"
-                                            ),
                                     dcc.Graph(
                                         id= 'prediction_graph',
                                     ),

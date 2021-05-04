@@ -61,11 +61,6 @@ def get_menu():
                 className="tab",
             ),
             dcc.Link(                         # in the making
-                "Profitability",
-                href="/dash-financial-report/profitability",
-                className="tab",
-            ),
-            dcc.Link(                         # in the making
                 "Seasonality",
                 href="/dash-financial-report/test",
                 className="tab",
@@ -78,6 +73,11 @@ def get_menu():
             dcc.Link(
                 "Predictions",
                 href="/dash-financial-report/predictions",
+                className="tab",
+            ),
+            dcc.Link(                         # in the making
+                "Profitability",
+                href="/dash-financial-report/profitability",
                 className="tab",
             ),
             # dcc.Link(                         # in the making
